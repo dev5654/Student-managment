@@ -15,7 +15,7 @@ public class GroupController implements BaseController {
 
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<Group> users() {
+    public List<Group> groups() {
         return GROUPS;
     }
 
@@ -27,7 +27,7 @@ public class GroupController implements BaseController {
     }
 
     @RequestMapping(value = "/{id}")
-    public Group groups(@PathVariable String id) {
+    public Group get(@PathVariable String id) {
         return getById(id);
     }
 
@@ -43,6 +43,11 @@ public class GroupController implements BaseController {
         Student student = new StudentController().getById(id);
         Group group = getById(groupId);
         List<Student> students = Objects.isNull(group.getStudents()) ? new ArrayList<>() : group.getStudents();
+        students.stream().filter(student1 -> !student1.getId().toString().equals(id))
+                .findFirst()
+                .orElseThrow(() -> {
+                    throw new RuntimeException("User already has been added");
+                });
         students.add(student);
         group.setStudents(students);
 
